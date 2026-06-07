@@ -1,675 +1,296 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>ChamScape – Scan the Past. Feel the Culture.</title>
 
-  <!-- ═══════════════════════════════════════════════
-       BƯỚC 1: Load A-Frame và AR.js từ CDN
-       Không cần cài đặt gì thêm.
-  ════════════════════════════════════════════════ -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
-    /* ─── Reset & Base ─── */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      overflow: hidden;
-      background: #000;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    }
+    body { overflow: hidden; background: #000; font-family: system-ui, sans-serif; }
 
-    /* ─── Top Bar ─── */
     #top-bar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 999;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 10px 16px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
     }
-    #logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    #logo { display: flex; align-items: center; gap: 8px; }
     #logo-icon {
-      width: 32px; height: 32px;
-      background: rgba(200,149,26,0.9);
-      border-radius: 8px;
+      width: 34px; height: 34px; border-radius: 8px;
+      background: #C8951A;
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
+      font-size: 18px;
     }
-    #logo-text {
-      color: #fff;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-    #logo-sub {
-      color: rgba(255,255,255,0.65);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      display: block;
-      margin-top: 1px;
-    }
+    #logo-text { color: #fff; font-size: 15px; font-weight: 700; }
+    #logo-sub { color: rgba(255,255,255,0.6); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; display: block; }
     #lang-btn {
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #fff;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+      color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
     }
 
-    /* ─── Scan Instruction Banner ─── */
     #scan-hint {
-      position: fixed;
-      bottom: 100px; left: 50%;
-      transform: translateX(-50%);
+      position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%);
       z-index: 999;
-      background: rgba(0,0,0,0.65);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      border: 1px solid rgba(200,149,26,0.5);
-      border-radius: 24px;
-      padding: 10px 20px;
-      font-size: 13px;
-      text-align: center;
-      white-space: nowrap;
+      background: rgba(0,0,0,0.72); color: #fff;
+      border: 1px solid rgba(200,149,26,0.6); border-radius: 24px;
+      padding: 10px 20px; font-size: 13px; text-align: center; white-space: nowrap;
       transition: opacity 0.5s;
     }
     #scan-hint .gold { color: #F5C842; font-weight: 600; }
     #scan-hint.hidden { opacity: 0; pointer-events: none; }
 
-    /* ─── Info Panel (hiện khi thấy marker) ─── */
     #info-panel {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 998;
-      background: linear-gradient(to top, rgba(0,0,0,0.92) 60%, transparent);
-      padding: 24px 20px 32px;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 998;
+      background: linear-gradient(to top, rgba(0,0,0,0.96) 70%, transparent);
+      padding: 24px 20px 36px;
       transform: translateY(100%);
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     #info-panel.visible { transform: translateY(0); }
-
-    #info-title {
-      color: #F5C842;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      letter-spacing: 0.3px;
-    }
-    #info-sub {
-      color: rgba(255,255,255,0.55);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 12px;
-    }
-    #info-desc {
-      color: rgba(255,255,255,0.85);
-      font-size: 13px;
-      line-height: 1.65;
-      margin-bottom: 14px;
-    }
+    #info-title { color: #F5C842; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    #info-sub { color: rgba(255,255,255,0.5); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+    #info-desc { color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.65; margin-bottom: 16px; }
     #audio-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(200,149,26,0.2);
-      border: 1px solid rgba(200,149,26,0.5);
-      color: #F5C842;
-      padding: 9px 18px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      width: fit-content;
-      transition: background 0.2s;
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(200,149,26,0.25); border: 1px solid rgba(200,149,26,0.6);
+      color: #F5C842; padding: 10px 18px; border-radius: 20px;
+      font-size: 13px; font-weight: 600; cursor: pointer; width: fit-content;
     }
-    #audio-btn:hover { background: rgba(200,149,26,0.35); }
-    #audio-icon { font-size: 16px; }
 
-    /* ─── Pulse ring khi marker được nhận diện ─── */
-    #pulse-ring {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      border: 2px solid rgba(200,149,26,0.8);
-      z-index: 997;
-      animation: pulse 1.5s ease-out infinite;
-      display: none;
-      pointer-events: none;
-    }
-    @keyframes pulse {
-      0%   { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
-      100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
-    }
-    #pulse-ring.active { display: block; }
-
-    /* ─── Share button ─── */
     #share-btn {
-      position: fixed;
-      top: 60px; right: 16px;
-      z-index: 999;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.25);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
+      position: fixed; top: 58px; right: 16px; z-index: 999;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+      color: #fff; padding: 7px 14px; border-radius: 20px; font-size: 12px; cursor: pointer;
       display: none;
     }
     #share-btn.visible { display: block; }
+
+    #pulse-ring {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 2px solid rgba(200,149,26,0.9);
+      z-index: 997; pointer-events: none; display: none;
+      animation: pulse 1.5s ease-out infinite;
+    }
+    @keyframes pulse {
+      0%   { transform: translate(-50%,-50%) scale(1); opacity: 0.9; }
+      100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
+    }
+    #pulse-ring.active { display: block; }
   </style>
 </head>
-
 <body>
 
-  <!-- ═══════════════════════════════════════════════
-       UI OVERLAY (trên camera)
-  ════════════════════════════════════════════════ -->
-
-  <!-- Logo top-left -->
   <div id="top-bar">
     <div id="logo">
       <div id="logo-icon">🏛️</div>
       <div>
         <div id="logo-text">ChamScape</div>
-        <span id="logo-sub">Digital Heritage · Mỹ Sơn</span>
+        <span id="logo-sub">Digital Heritage · My Son</span>
       </div>
     </div>
     <button id="lang-btn" onclick="toggleLang()">VI / EN</button>
   </div>
 
-  <!-- Hướng dẫn quét marker -->
   <div id="scan-hint">
-    Hướng camera vào <span class="gold">HIRO marker</span> để xem tháp Chăm Pa 3D
+    Point camera at <span class="gold">My Son photo</span> to restore the Cham Tower in 3D
   </div>
 
-  <!-- Hiệu ứng nhận diện marker -->
   <div id="pulse-ring"></div>
+  <button id="share-btn" onclick="shareExp()">📸 Share</button>
 
-  <!-- Nút share (hiện sau khi thấy marker) -->
-  <button id="share-btn" onclick="shareExperience()">📸 Chia sẻ</button>
-
-  <!-- Info panel trượt từ dưới lên -->
   <div id="info-panel">
-    <div id="info-title">Thánh địa Mỹ Sơn</div>
-    <div id="info-sub">UNESCO World Heritage · Quảng Nam, Việt Nam</div>
+    <div id="info-title">My Son Sanctuary</div>
+    <div id="info-sub">UNESCO World Heritage · Quang Nam, Vietnam</div>
     <div id="info-desc">
-      Quần thể tháp Chăm được xây dựng từ thế kỷ 4 đến thế kỷ 14. Đây là trung tâm
-      tôn giáo của vương quốc Chăm Pa — nơi thờ thần Shiva và các vị thần Hindu.
-      Được UNESCO công nhận là Di sản Văn hóa Thế giới năm 1999.
+      My Son Sanctuary is a cluster of Hindu temples built by the Cham kings between the 4th and 14th century. Designated as a UNESCO World Heritage Site in 1999, it is one of Southeast Asia's most significant archaeological sites.
     </div>
     <button id="audio-btn" onclick="playAudio()">
       <span id="audio-icon">▶</span>
-      <span id="audio-text">Nghe thuyết minh tiếng Việt</span>
+      <span id="audio-text">Play Audio Guide</span>
     </button>
   </div>
 
-  <!-- ═══════════════════════════════════════════════
-       BƯỚC 2: A-FRAME SCENE — Đây là phần WebAR chính
-       
-       Giải thích các thuộc tính quan trọng:
-       
-       arjs="sourceType: webcam"   → dùng camera điện thoại
-       detectionMode: mono         → nhận diện marker đen trắng
-       matrixCodeType: 3x3         → loại marker (để dùng preset)
-       
-       embedded                    → nhúng vào trang web
-       vr-mode-ui="enabled: false" → tắt nút VR không cần thiết
-  ════════════════════════════════════════════════ -->
+  <!-- ═══════════════════════════════════════
+       MIND AR SCENE
+       imageTargetSrc: file .mind vừa upload
+       filterMinCF / filterBeta: chống rung
+  ════════════════════════════════════════ -->
   <a-scene
+    mindar-image="imageTargetSrc: targets.mind; filterMinCF: 0.001; filterBeta: 0.01; missTolerance: 5; warmupTolerance: 5;"
+    color-space="sRGB"
+    renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
     vr-mode-ui="enabled: false"
-    renderer="logarithmicDepthBuffer: true; precision: medium; antialias: true;"
-    embedded
-    arjs="sourceType: webcam;
-          debugUIEnabled: false;
-          detectionMode: mono_and_matrix;
-          matrixCodeType: 3x3;"
+    device-orientation-permission-ui="enabled: false"
   >
-
-    <!-- ── ASSETS: preload model và audio ── -->
     <a-assets>
-      <!--
-        NẾU BẠN CÓ FILE .GLB THẬT:
-        Đặt file vào assets/cham-tower.glb rồi bỏ comment dòng dưới:
-        <a-asset-item id="cham-model" src="assets/cham-tower.glb"></a-asset-item>
-
-        NẾU CÓ FILE AUDIO:
-        <audio id="audio-vi" src="assets/audio-vi.mp3" preload="auto"></audio>
-        <audio id="audio-en" src="assets/audio-en.mp3" preload="auto"></audio>
-      -->
+      <!-- Nếu có file ảnh tháp để hiện song song -->
     </a-assets>
 
-    <!-- ══════════════════════════════════════════
-         BƯỚC 3: MARKER — Trigger điểm bắt đầu AR
-         
-         preset="hiro" → dùng marker Hiro có sẵn
-         (In ảnh hiro marker từ Google để test)
-         
-         ĐỂ DÙNG CUSTOM MARKER:
-         Đổi thành:
-           type="pattern"
-           url="markers/chamscape.patt"
-    ════════════════════════════════════════════ -->
-    <a-marker
-      preset="hiro"
-      id="main-marker"
-      smooth="true"
-      smoothCount="5"
-      smoothTolerance="0.05"
-      smoothThreshold="2"
-    >
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- ── NHÓM CHÍNH: toàn bộ nội dung AR nằm trong đây ── -->
-      <a-entity id="chamscape-scene" position="0 0 0" rotation="0 0 0">
+    <!-- ══════════════════════════════════
+         IMAGE TARGET INDEX 0
+         Khi camera nhận ra ảnh tháp Mỹ Sơn
+         → hiện toàn bộ 3D scene chồng lên
+    ═══════════════════════════════════ -->
+    <a-entity mindar-image-target="targetIndex: 0" id="target-entity">
 
-        <!-- ════════════════════════════════════
-             PHẦN A: NỀN (platform đặt tháp)
-             Hình lục giác giả lập bằng cylinder
-        ════════════════════════════════════ -->
-        <a-cylinder
-          position="0 0.02 0"
-          radius="0.9"
-          height="0.04"
-          color="#5C3A1E"
-          material="roughness: 0.9; metalness: 0.1"
-        ></a-cylinder>
+      <a-entity id="chamscape-scene" position="0 0 0.1" rotation="0 0 0">
 
-        <!-- Vòng trang trí xung quanh nền -->
-        <a-torus
-          position="0 0.05 0"
-          radius="0.92"
-          radius-tubular="0.02"
-          color="#C8951A"
-          material="metalness: 0.6; roughness: 0.3"
-          rotation="90 0 0"
-        ></a-torus>
-
-        <!-- ════════════════════════════════════
-             PHẦN B: THÁP CHÍNH (Kalan chính)
-             Kiến trúc tháp Chăm Pa gồm:
-             - Đế tháp (thấp, rộng)
-             - Thân tháp (cao, hình vuông)
-             - Tầng thu (các tầng thu nhỏ dần)
-             - Đỉnh tháp (kalasha)
-        ════════════════════════════════════ -->
+        <!-- Nền platform -->
+        <a-cylinder position="0 -0.05 0" radius="0.55" height="0.03" color="#6B4226" material="roughness:0.9"></a-cylinder>
+        <a-torus position="0 -0.03 0" radius="0.57" radius-tubular="0.014" color="#C8951A" material="metalness:0.7;roughness:0.2" rotation="90 0 0"></a-torus>
 
         <!-- Đế tháp -->
-        <a-box
-          position="0 0.1 0"
-          width="0.7" height="0.2" depth="0.7"
-          color="#C4956A"
-          material="roughness: 0.95; metalness: 0"
-        ></a-box>
+        <a-box position="0 0.06 0" width="0.42" height="0.12" depth="0.42" color="#C4956A" material="roughness:0.85"></a-box>
 
         <!-- Thân tháp chính -->
-        <a-box
-          position="0 0.55 0"
-          width="0.55" height="0.7" depth="0.55"
-          color="#D4A574"
-          material="roughness: 0.9; metalness: 0.05"
-        ></a-box>
+        <a-box position="0 0.30 0" width="0.32" height="0.38" depth="0.32" color="#D4A574" material="roughness:0.8"></a-box>
 
         <!-- Tầng thu 1 -->
-        <a-box
-          position="0 1.0 0"
-          width="0.48" height="0.2" depth="0.48"
-          color="#C4956A"
-          material="roughness: 0.9"
-        ></a-box>
+        <a-box position="0 0.54 0" width="0.27" height="0.11" depth="0.27" color="#C4956A" material="roughness:0.85"></a-box>
 
         <!-- Tầng thu 2 -->
-        <a-box
-          position="0 1.25 0"
-          width="0.38" height="0.2" depth="0.38"
-          color="#7A5535"
-          material="roughness: 0.9"
-        ></a-box>
+        <a-box position="0 0.67 0" width="0.21" height="0.10" depth="0.21" color="#B8865C" material="roughness:0.85"></a-box>
 
         <!-- Tầng thu 3 -->
-        <a-box
-          position="0 1.48 0"
-          width="0.28" height="0.18" depth="0.28"
-          color="#6B4428"
-          material="roughness: 0.85"
-        ></a-box>
+        <a-box position="0 0.79 0" width="0.15" height="0.09" depth="0.15" color="#A87848" material="roughness:0.85"></a-box>
 
-        <!-- Đỉnh tháp (kalasha — bình đồng) -->
-        <a-sphere
-          position="0 1.65 0"
-          radius="0.12"
-          color="#C8951A"
-          material="metalness: 0.7; roughness: 0.2"
-        ></a-sphere>
+        <!-- Đỉnh kalasha -->
+        <a-sphere position="0 0.87 0" radius="0.07" color="#C8951A" material="metalness:0.8;roughness:0.15"></a-sphere>
+        <a-cylinder position="0 0.96 0" radius="0.016" height="0.14" color="#C8951A" material="metalness:0.8"></a-cylinder>
 
-        <!-- Cột đỉnh -->
-        <a-cylinder
-          position="0 1.8 0"
-          radius="0.03"
-          height="0.3"
-          color="#C8951A"
-          material="metalness: 0.8"
-        ></a-cylinder>
-
-        <!-- ════════════════════════════════════
-             PHẦN C: THÁP PHỤ TRÁI (Mandapa)
-        ════════════════════════════════════ -->
-        <a-entity position="-0.7 0 0">
-          <a-box position="0 0.08 0" width="0.35" height="0.15" depth="0.35" color="#8B6347" material="roughness:0.9"></a-box>
-          <a-box position="0 0.38 0" width="0.28" height="0.45" depth="0.28" color="#9A7055" material="roughness:0.9"></a-box>
-          <a-box position="0 0.68 0" width="0.22" height="0.15" depth="0.22" color="#8B6347" material="roughness:0.9"></a-box>
-          <a-cone position="0 0.85 0" radius-bottom="0.14" height="0.22" color="#7A5535" material="roughness:0.9"></a-cone>
-          <a-sphere position="0 1.0 0" radius="0.07" color="#C8951A" material="metalness:0.6; roughness:0.3"></a-sphere>
+        <!-- Tháp phụ trái -->
+        <a-entity position="-0.38 0 0">
+          <a-box position="0 0.05 0" width="0.20" height="0.09" depth="0.20" color="#C4956A" material="roughness:0.85"></a-box>
+          <a-box position="0 0.20 0" width="0.16" height="0.22" depth="0.16" color="#D4A574" material="roughness:0.8"></a-box>
+          <a-cone position="0 0.38 0" radius-bottom="0.10" height="0.14" color="#B8865C" material="roughness:0.85"></a-cone>
+          <a-sphere position="0 0.47 0" radius="0.04" color="#C8951A" material="metalness:0.7"></a-sphere>
         </a-entity>
 
-        <!-- ════════════════════════════════════
-             PHẦN D: THÁP PHỤ PHẢI
-        ════════════════════════════════════ -->
-        <a-entity position="0.7 0 0">
-          <a-box position="0 0.08 0" width="0.35" height="0.15" depth="0.35" color="#8B6347" material="roughness:0.9"></a-box>
-          <a-box position="0 0.38 0" width="0.28" height="0.45" depth="0.28" color="#9A7055" material="roughness:0.9"></a-box>
-          <a-box position="0 0.68 0" width="0.22" height="0.15" depth="0.22" color="#8B6347" material="roughness:0.9"></a-box>
-          <a-cone position="0 0.85 0" radius-bottom="0.14" height="0.22" color="#7A5535" material="roughness:0.9"></a-cone>
-          <a-sphere position="0 1.0 0" radius="0.07" color="#C8951A" material="metalness:0.6; roughness:0.3"></a-sphere>
+        <!-- Tháp phụ phải -->
+        <a-entity position="0.38 0 0">
+          <a-box position="0 0.05 0" width="0.20" height="0.09" depth="0.20" color="#C4956A" material="roughness:0.85"></a-box>
+          <a-box position="0 0.20 0" width="0.16" height="0.22" depth="0.16" color="#D4A574" material="roughness:0.8"></a-box>
+          <a-cone position="0 0.38 0" radius-bottom="0.10" height="0.14" color="#B8865C" material="roughness:0.85"></a-cone>
+          <a-sphere position="0 0.47 0" radius="0.04" color="#C8951A" material="metalness:0.7"></a-sphere>
         </a-entity>
 
-        <!-- ════════════════════════════════════
-             PHẦN E: THÁP SAU (Gopura — cổng)
-        ════════════════════════════════════ -->
-        <a-entity position="0 0 -0.65">
-          <a-box position="0 0.08 0" width="0.5" height="0.15" depth="0.3" color="#8B6347" material="roughness:0.9"></a-box>
-          <a-box position="0 0.35 0" width="0.4" height="0.35" depth="0.25" color="#9A7055" material="roughness:0.9"></a-box>
-          <!-- Cửa vòm giả -->
-          <a-cylinder position="0 0.3 0.1" radius="0.1" height="0.25" color="#5C3A1E" rotation="90 0 0"></a-cylinder>
-          <a-cone position="0 0.6 0" radius-bottom="0.24" height="0.25" color="#7A5535" material="roughness:0.9"></a-cone>
-        </a-entity>
+        <!-- Ánh sáng -->
+        <a-light type="point" position="0 0.5 0.3" color="#FFD580" intensity="1.5" distance="2"></a-light>
+        <a-light type="directional" position="1 2 1" color="#FFF5E0" intensity="0.8"></a-light>
+        <a-light type="ambient" color="#5C3A00" intensity="0.7"></a-light>
 
-        <!-- ════════════════════════════════════
-             PHẦN F: HIỆU ỨNG PARTICLES / ÁNH SÁNG
-             Các hạt ánh sáng bay lên xung quanh tháp
-        ════════════════════════════════════ -->
+        <!-- Particles -->
+        <a-sphere position="0.18 0.2 0.12" radius="0.012" color="#F5C842" material="emissive:#C8951A;emissiveIntensity:1">
+          <a-animation attribute="position" from="0.18 0.05 0.12" to="0.18 1.1 0.12" dur="2800" repeat="indefinite" easing="linear"></a-animation>
+          <a-animation attribute="opacity" from="1" to="0" dur="2800" repeat="indefinite" easing="linear"></a-animation>
+        </a-sphere>
+        <a-sphere position="-0.15 0.3 0.1" radius="0.010" color="#F5C842" material="emissive:#C8951A;emissiveIntensity:1">
+          <a-animation attribute="position" from="-0.15 0.05 0.1" to="-0.15 1.0 0.1" dur="2400" repeat="indefinite" delay="600" easing="linear"></a-animation>
+          <a-animation attribute="opacity" from="0.9" to="0" dur="2400" repeat="indefinite" delay="600" easing="linear"></a-animation>
+        </a-sphere>
+        <a-sphere position="0.22 0.5 -0.1" radius="0.011" color="#F5C842" material="emissive:#C8951A;emissiveIntensity:1">
+          <a-animation attribute="position" from="0.22 0.1 -0.1" to="0.22 1.2 -0.1" dur="3200" repeat="indefinite" delay="1200" easing="linear"></a-animation>
+          <a-animation attribute="opacity" from="0.8" to="0" dur="3200" repeat="indefinite" delay="1200" easing="linear"></a-animation>
+        </a-sphere>
 
-        <!-- Ánh sáng vàng từ dưới lên (ambient glow) -->
-        <a-light type="point" position="0 0.3 0" color="#C8951A" intensity="0.8" distance="2"></a-light>
-        <a-light type="directional" position="1 2 1" color="#FFF5E0" intensity="0.6"></a-light>
-        <a-light type="ambient" color="#3D2000" intensity="0.4"></a-light>
+        <!-- Text nổi -->
+        <a-text value="MY SON SANCTUARY" align="center" color="#F5C842" scale="0.28 0.28 0.28" position="0 1.15 0"></a-text>
+        <a-text value="4th - 14th Century CE" align="center" color="#FFFFFF" scale="0.18 0.18 0.18" position="0 1.04 0"></a-text>
+        <a-text value="UNESCO World Heritage" align="center" color="#C8951A" scale="0.14 0.14 0.14" position="0 0.96 0"></a-text>
 
-        <!-- Particle: các chấm vàng bay lên -->
-        <a-entity id="particles">
-          <a-sphere position="0.3 1.2 0.2" radius="0.025" color="#F5C842" material="emissive:#C8951A; emissiveIntensity:0.8">
-            <a-animation attribute="position" from="0.3 0.5 0.2" to="0.3 2.2 0.2" dur="3000" repeat="indefinite" easing="linear" direction="normal"></a-animation>
-            <a-animation attribute="opacity" from="0.9" to="0" dur="3000" repeat="indefinite" easing="linear"></a-animation>
-          </a-sphere>
-
-          <a-sphere position="-0.25 0.8 0.3" radius="0.02" color="#F5C842" material="emissive:#C8951A; emissiveIntensity:0.8">
-            <a-animation attribute="position" from="-0.25 0.3 0.3" to="-0.25 2.0 0.3" dur="2500" repeat="indefinite" easing="linear" delay="600"></a-animation>
-            <a-animation attribute="opacity" from="0.8" to="0" dur="2500" repeat="indefinite" delay="600"></a-animation>
-          </a-sphere>
-
-          <a-sphere position="0.4 1.5 -0.3" radius="0.018" color="#F5C842" material="emissive:#C8951A; emissiveIntensity:0.8">
-            <a-animation attribute="position" from="0.4 0.4 -0.3" to="0.4 2.5 -0.3" dur="3500" repeat="indefinite" easing="linear" delay="1200"></a-animation>
-            <a-animation attribute="opacity" from="1" to="0" dur="3500" repeat="indefinite" delay="1200"></a-animation>
-          </a-sphere>
-
-          <a-sphere position="-0.5 1.0 -0.2" radius="0.022" color="#F5C842" material="emissive:#C8951A; emissiveIntensity:0.8">
-            <a-animation attribute="position" from="-0.5 0.2 -0.2" to="-0.5 2.3 -0.2" dur="2800" repeat="indefinite" easing="linear" delay="900"></a-animation>
-            <a-animation attribute="opacity" from="0.7" to="0" dur="2800" repeat="indefinite" delay="900"></a-animation>
-          </a-sphere>
-        </a-entity>
-
-        <!-- ════════════════════════════════════
-             PHẦN G: TEXT NỔI PHÍA TRÊN THÁP
-             Hiển thị tên di sản và năm xây dựng
-        ════════════════════════════════════ -->
-        <a-entity position="0 2.1 0">
-          <!-- Text chính -->
-          <a-text
-            id="main-text"
-            value="MY SON SANCTUARY"
-            align="center"
-            color="#F5C842"
-            scale="0.55 0.55 0.55"
-            position="0 0 0"
-          ></a-text>
-
-          <!-- Text phụ: năm tháng -->
-          <a-text
-            value="4th - 14th Century"
-            align="center"
-            color="rgba(255,255,255,0.75)"
-            scale="0.35 0.35 0.35"
-            position="0 -0.18 0"
-          ></a-text>
-
-          <!-- Nhãn UNESCO -->
-          <a-text
-            value="UNESCO World Heritage"
-            align="center"
-            color="rgba(200,149,26,0.85)"
-            scale="0.28 0.28 0.28"
-            position="0 -0.35 0"
-          ></a-text>
-
-          <!-- Animation: text nhấp nháy nhẹ -->
-          <a-animation
-            attribute="position"
-            from="0 2.1 0"
-            to="0 2.25 0"
-            dur="2000"
-            direction="alternate"
-            repeat="indefinite"
-            easing="easeInOutSine"
-          ></a-animation>
-        </a-entity>
-
-        <!-- ════════════════════════════════════
-             PHẦN H: VÒNG XOAY XUNG QUANH THÁP
-             Tạo hiệu ứng "magic ring" đẹp mắt
-        ════════════════════════════════════ -->
-        <a-torus
-          position="0 0.9 0"
-          radius="1.1"
-          radius-tubular="0.015"
-          color="#C8951A"
-          material="metalness:0.9; roughness:0.1; transparent:true; opacity:0.4"
-          rotation="90 0 0"
-        >
-          <a-animation
-            attribute="rotation"
-            from="90 0 0"
-            to="90 360 0"
-            dur="8000"
-            repeat="indefinite"
-            easing="linear"
-          ></a-animation>
+        <!-- Vòng xoay -->
+        <a-torus position="0 0.45 0" radius="0.62" radius-tubular="0.009" color="#C8951A" material="metalness:0.9;roughness:0.1;transparent:true;opacity:0.55" rotation="90 0 0">
+          <a-animation attribute="rotation" from="90 0 0" to="90 360 0" dur="8000" repeat="indefinite" easing="linear"></a-animation>
+        </a-torus>
+        <a-torus position="0 0.45 0" radius="0.56" radius-tubular="0.007" color="#F5C842" material="metalness:0.9;roughness:0.1;transparent:true;opacity:0.3" rotation="45 0 0">
+          <a-animation attribute="rotation" from="45 0 0" to="45 -360 0" dur="12000" repeat="indefinite" easing="linear"></a-animation>
         </a-torus>
 
-        <!-- Vòng thứ hai nghiêng 45 độ -->
-        <a-torus
-          position="0 0.9 0"
-          radius="1.0"
-          radius-tubular="0.012"
-          color="#F5C842"
-          material="metalness:0.9; roughness:0.1; transparent:true; opacity:0.25"
-          rotation="45 0 0"
-        >
-          <a-animation
-            attribute="rotation"
-            from="45 0 0"
-            to="45 -360 0"
-            dur="12000"
-            repeat="indefinite"
-            easing="linear"
-          ></a-animation>
-        </a-torus>
-
-        <!-- ════════════════════════════════════
-             PHẦN I: ANIMATION TOÀN BỘ SCENE
-             Scene từ từ xuất hiện (scale 0 → 1)
-        ════════════════════════════════════ -->
-        <a-animation
-          id="scene-appear"
-          attribute="scale"
-          from="0 0 0"
-          to="1 1 1"
-          dur="800"
-          easing="easeOutBack"
-          fill="forwards"
-        ></a-animation>
+        <!-- Xuất hiện animation -->
+        <a-animation attribute="scale" from="0 0 0" to="1 1 1" dur="700" easing="easeOutBack" fill="forwards"></a-animation>
 
       </a-entity>
-      <!-- Kết thúc #chamscape-scene -->
-
-    </a-marker>
-    <!-- Kết thúc marker -->
-
-    <!-- Camera AR (bắt buộc phải có) -->
-    <a-entity camera></a-entity>
+    </a-entity>
 
   </a-scene>
-  <!-- Kết thúc a-scene -->
 
-
-  <!-- ═══════════════════════════════════════════════
-       BƯỚC 4: JAVASCRIPT — Xử lý UI và sự kiện
-  ════════════════════════════════════════════════ -->
   <script>
-    // ── Nội dung đa ngôn ngữ ──
-    var content = {
-      vi: {
-        hint: 'Hướng camera vào <span class="gold">HIRO marker</span> để xem tháp Chăm Pa 3D',
-        title: 'Thánh địa Mỹ Sơn',
-        sub: 'UNESCO World Heritage · Quảng Nam, Việt Nam',
-        desc: 'Quần thể tháp Chăm được xây dựng từ thế kỷ 4 đến thế kỷ 14. Đây là trung tâm tôn giáo của vương quốc Chăm Pa — nơi thờ thần Shiva và các vị thần Hindu. Được UNESCO công nhận là Di sản Văn hóa Thế giới năm 1999.',
-        audioBtn: 'Nghe thuyết minh tiếng Việt',
-        mainText: 'THÁNH ĐỊA MỸ SƠN'
-      },
+    var lang = 'en';
+    var audioOn = false;
+
+    var texts = {
       en: {
-        hint: 'Point camera at <span class="gold">HIRO marker</span> to see Cham Tower in 3D',
-        title: 'Mỹ Sơn Sanctuary',
-        sub: 'UNESCO World Heritage · Quảng Nam, Vietnam',
-        desc: 'The My Son Sanctuary is a cluster of abandoned and partially ruined Hindu temples built between the 4th and 14th century by the kings of Champa. Designated as a UNESCO World Heritage Site in 1999.',
-        audioBtn: 'Play English Audio Guide',
-        mainText: 'MY SON SANCTUARY'
+        hint: 'Point camera at <span class="gold">My Son photo</span> to restore the Cham Tower in 3D',
+        title: 'My Son Sanctuary',
+        sub: 'UNESCO World Heritage · Quang Nam, Vietnam',
+        desc: 'My Son Sanctuary is a cluster of Hindu temples built by the Cham kings between the 4th and 14th century. Designated as a UNESCO World Heritage Site in 1999.',
+        audio: 'Play Audio Guide'
+      },
+      vi: {
+        hint: 'Huong camera vao <span class="gold">anh thap My Son</span> de phuc dung 3D',
+        title: 'Thanh dia My Son',
+        sub: 'Di san UNESCO · Quang Nam, Viet Nam',
+        desc: 'Quan the thap Cham duoc xay dung tu the ky 4 den the ky 14 boi cac vuong Cham Pa. Duoc UNESCO cong nhan la Di san Van hoa The gioi nam 1999.',
+        audio: 'Nghe thuyet minh'
       }
     };
 
-    var currentLang = 'vi';
-    var markerVisible = false;
-    var audioPlaying = false;
-
-    // ── Khởi tạo sau khi trang load ──
+    // Lắng nghe sự kiện Mind AR
     window.addEventListener('load', function() {
-      var marker = document.getElementById('main-marker');
+      var sceneEl = document.querySelector('a-scene');
 
-      // Sự kiện: marker được nhận diện
-      marker.addEventListener('markerFound', function() {
-        markerVisible = true;
-        onMarkerFound();
+      sceneEl.addEventListener('arReady', function() {
+        console.log('MindAR ready');
       });
 
-      // Sự kiện: mất marker
-      marker.addEventListener('markerLost', function() {
-        markerVisible = false;
-        onMarkerLost();
+      var target = document.getElementById('target-entity');
+
+      target.addEventListener('targetFound', function() {
+        document.getElementById('scan-hint').classList.add('hidden');
+        document.getElementById('pulse-ring').classList.add('active');
+        setTimeout(function(){ document.getElementById('pulse-ring').classList.remove('active'); }, 1500);
+        document.getElementById('info-panel').classList.add('visible');
+        document.getElementById('share-btn').classList.add('visible');
+      });
+
+      target.addEventListener('targetLost', function() {
+        document.getElementById('scan-hint').classList.remove('hidden');
+        document.getElementById('info-panel').classList.remove('visible');
+        document.getElementById('share-btn').classList.remove('visible');
       });
     });
 
-    // ── Khi tìm thấy marker ──
-    function onMarkerFound() {
-      // Ẩn hint
-      document.getElementById('scan-hint').classList.add('hidden');
-
-      // Bật pulse ring
-      document.getElementById('pulse-ring').classList.add('active');
-      setTimeout(function() {
-        document.getElementById('pulse-ring').classList.remove('active');
-      }, 1500);
-
-      // Hiện info panel
-      document.getElementById('info-panel').classList.add('visible');
-
-      // Hiện nút share
-      document.getElementById('share-btn').classList.add('visible');
-    }
-
-    // ── Khi mất marker ──
-    function onMarkerLost() {
-      document.getElementById('scan-hint').classList.remove('hidden');
-      document.getElementById('info-panel').classList.remove('visible');
-      document.getElementById('share-btn').classList.remove('visible');
-    }
-
-    // ── Chuyển ngôn ngữ ──
     function toggleLang() {
-      currentLang = (currentLang === 'vi') ? 'en' : 'vi';
-      var c = content[currentLang];
-
-      document.getElementById('scan-hint').innerHTML =
-        'Hướng camera vào ' + (currentLang === 'en'
-          ? '<span class="gold">HIRO marker</span> to see Cham Tower in 3D'
-          : '<span class="gold">HIRO marker</span> để xem tháp Chăm Pa 3D');
-
-      document.getElementById('info-title').textContent = c.title;
-      document.getElementById('info-sub').textContent = c.sub;
-      document.getElementById('info-desc').textContent = c.desc;
-      document.getElementById('audio-text').textContent = c.audioBtn;
-
-      // Cập nhật text trên model 3D
-      var mainText = document.getElementById('main-text');
-      if (mainText) mainText.setAttribute('value', c.mainText);
+      lang = (lang === 'en') ? 'vi' : 'en';
+      var t = texts[lang];
+      document.getElementById('scan-hint').innerHTML = t.hint;
+      document.getElementById('info-title').textContent = t.title;
+      document.getElementById('info-sub').textContent = t.sub;
+      document.getElementById('info-desc').textContent = t.desc;
+      document.getElementById('audio-text').textContent = t.audio;
     }
 
-    // ── Phát audio guide ──
     function playAudio() {
-      audioPlaying = !audioPlaying;
-      var btn = document.getElementById('audio-btn');
-      var icon = document.getElementById('audio-icon');
-
-      if (audioPlaying) {
-        icon.textContent = '⏸';
-        // Nếu có file audio thật, uncomment:
-        // var audio = document.getElementById('audio-' + currentLang);
-        // if (audio) audio.play();
-        console.log('▶ Playing audio guide in: ' + currentLang);
-      } else {
-        icon.textContent = '▶';
-        // if (audio) audio.pause();
-      }
+      audioOn = !audioOn;
+      document.getElementById('audio-icon').textContent = audioOn ? '⏸' : '▶';
     }
 
-    // ── Chia sẻ trải nghiệm ──
-    function shareExperience() {
+    function shareExp() {
       if (navigator.share) {
-        navigator.share({
-          title: 'ChamScape – Thánh địa Mỹ Sơn',
-          text: 'Tôi vừa khám phá tháp Chăm Pa 3D tại Mỹ Sơn qua WebAR! #ChamScape #MySon #UNESCO',
-          url: window.location.href
-        });
+        navigator.share({ title: 'ChamScape', text: 'My Son Sanctuary restored in AR! #ChamScape #UNESCO', url: window.location.href });
       } else {
-        // Fallback: copy link
-        navigator.clipboard.writeText(window.location.href).then(function() {
-          alert('Đã copy link! Dán vào mạng xã hội để chia sẻ #ChamScape');
-        });
+        navigator.clipboard.writeText(window.location.href);
+        alert('Link copied! Share #ChamScape');
       }
     }
   </script>
-
 </body>
 </html>
