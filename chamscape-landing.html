@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ChamScape – Scan the Past. Feel the Culture.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --brick: #8B3A1A;
+  --brick-light: #C4956A;
+  --brick-dark: #4A1B0A;
+  --gold: #C8951A;
+  --gold-light: #F5C842;
+  --gold-pale: #FFF3DC;
+  --stone: #2A1F14;
+  --stone-mid: #5C3A1E;
+  --cream: #F5EED8;
+  --cream-dark: #E8D5A8;
+  --text-dark: #1A0F08;
+  --text-mid: #5C3A1E;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Outfit',sans-serif;
+  background:#0D0804;
+  color:var(--cream);
+  overflow-x:hidden;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;
+  background:linear-gradient(to bottom,rgba(13,8,4,0.95),transparent);
+  backdrop-filter:blur(2px);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.nav-logo-text{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;letter-spacing:1px;color:var(--cream);}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{color:rgba(245,238,216,0.7);text-decoration:none;font-size:14px;font-weight:300;letter-spacing:0.5px;transition:color 0.2s;}
+.nav-links a:hover{color:var(--gold-light);}
+.nav-cta{
+  background:var(--gold);color:var(--stone);
+  padding:8px 20px;border-radius:4px;
+  font-size:13px;font-weight:500;text-decoration:none;
+  transition:background 0.2s;
+}
+.nav-cta:hover{background:var(--gold-light);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:120px 24px 80px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 60%, rgba(139,58,26,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 50% 80%, rgba(200,149,26,0.15) 0%, transparent 60%),
+    linear-gradient(to bottom, #0D0804 0%, #1A0B04 40%, #0D0804 100%);
+}
+.hero-texture{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8951A' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-eyebrow{
+  font-size:11px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--gold);font-weight:400;margin-bottom:20px;
+  position:relative;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{
+  content:'';display:inline-block;width:32px;height:1px;
+  background:var(--gold);vertical-align:middle;margin:0 12px;opacity:0.6;
+}
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(52px,8vw,100px);
+  font-weight:300;line-height:1.0;
+  letter-spacing:-1px;
+  color:var(--cream);
+  position:relative;margin-bottom:12px;
+}
+.hero-title em{color:var(--gold-light);font-style:italic;}
+.hero-subtitle{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(18px,3vw,26px);
+  font-weight:300;font-style:italic;
+  color:var(--brick-light);
+  margin-bottom:36px;position:relative;
+  letter-spacing:0.5px;
+}
+.hero-desc{
+  max-width:540px;margin:0 auto 48px;
+  font-size:15px;font-weight:300;line-height:1.8;
+  color:rgba(245,238,216,0.75);position:relative;
+}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;position:relative;}
+.btn-primary{
+  background:var(--gold);color:var(--stone);
+  padding:14px 32px;border-radius:4px;
+  font-size:14px;font-weight:500;text-decoration:none;letter-spacing:0.5px;
+  transition:all 0.2s;border:none;cursor:pointer;
+}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);}
+.btn-outline{
+  background:transparent;color:var(--cream);
+  padding:13px 32px;border-radius:4px;
+  font-size:14px;font-weight:400;text-decoration:none;letter-spacing:0.5px;
+  border:1px solid rgba(245,238,216,0.3);transition:all 0.2s;cursor:pointer;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+.hero-stats{
+  display:flex;gap:48px;justify-content:center;flex-wrap:wrap;
+  margin-top:72px;padding-top:48px;position:relative;
+  border-top:1px solid rgba(200,149,26,0.2);
+}
+.stat-item{text-align:center;}
+.stat-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:36px;font-weight:600;color:var(--gold-light);
+  display:block;line-height:1;
+}
+.stat-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,238,216,0.5);margin-top:6px;font-weight:300;}
+
+/* ── SECTION BASE ── */
+section{padding:100px 48px;}
+.section-eyebrow{
+  font-size:10px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--gold);font-weight:400;margin-bottom:16px;
+  display:flex;align-items:center;gap:12px;
+}
+.section-eyebrow::after{content:'';flex:1;height:1px;background:rgba(200,149,26,0.3);}
+.section-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,5vw,56px);font-weight:300;
+  color:var(--cream);line-height:1.1;margin-bottom:16px;
+}
+.section-title em{color:var(--gold-light);font-style:italic;}
+.section-desc{
+  font-size:15px;font-weight:300;color:rgba(245,238,216,0.65);
+  line-height:1.8;max-width:480px;
+}
+
+/* ── DEMO SECTION ── */
+.demo-section{background:#110904;}
+.demo-inner{max-width:1100px;margin:0 auto;}
+.demo-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:center;margin-top:64px;
+}
+.demo-phone-wrap{
+  display:flex;justify-content:center;
+}
+.demo-phone{
+  width:260px;
+  background:#1A0B04;
+  border-radius:40px;
+  border:1px solid rgba(200,149,26,0.3);
+  padding:20px 16px;
+  position:relative;
+  box-shadow:0 0 80px rgba(139,58,26,0.3);
+}
+.demo-phone-notch{
+  width:80px;height:24px;background:#0D0804;
+  border-radius:0 0 16px 16px;margin:0 auto 16px;
+}
+.demo-screen{
+  background:#1F1008;border-radius:24px;
+  padding:16px;min-height:400px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  border:1px solid rgba(200,149,26,0.15);
+}
+.demo-screen-top{
+  position:absolute;top:12px;left:12px;right:12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.demo-logo-mini{
+  display:flex;align-items:center;gap:6px;
+}
+.demo-logo-dot{width:20px;height:20px;background:var(--gold);border-radius:4px;font-size:10px;display:flex;align-items:center;justify-content:center;}
+.demo-logo-name{font-size:11px;font-weight:500;color:var(--cream);}
+.demo-lang{font-size:9px;background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:10px;color:rgba(255,255,255,0.6);}
+.demo-tower{
+  width:140px;height:200px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  position:relative;margin:40px 0 20px;
+}
+.tower-tip{width:6px;height:20px;background:var(--gold);border-radius:3px;}
+.tower-top{width:30px;height:15px;background:var(--brick-light);border-radius:2px;margin-top:2px;}
+.tower-t1{width:50px;height:18px;background:var(--brick);margin-top:3px;}
+.tower-t2{width:65px;height:22px;background:#A04420;margin-top:3px;}
+.tower-body{width:80px;height:60px;background:var(--brick);margin-top:3px;position:relative;}
+.tower-door{width:16px;height:24px;background:#1A0B04;border-radius:8px 8px 0 0;position:absolute;bottom:0;left:50%;transform:translateX(-50%);}
+.tower-base{width:100px;height:16px;background:var(--brick-dark);margin-top:3px;}
+.tower-platform{width:120px;height:10px;background:#3A1A08;margin-top:3px;border-radius:2px;}
+.demo-ring{
+  position:absolute;
+  border:1px solid rgba(200,149,26,0.4);
+  border-radius:50%;
+  animation:ring-spin 6s linear infinite;
+}
+@keyframes ring-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);};}
+.ring1{width:160px;height:60px;top:140px;left:50%;transform:translateX(-50%) rotateX(70deg);}
+.ring2{width:140px;height:50px;top:155px;left:50%;transform:translateX(-50%) rotateX(70deg);animation-duration:9s;animation-direction:reverse;border-color:rgba(200,149,26,0.2);}
+.demo-gold-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:13px;color:var(--gold-light);font-weight:600;
+  letter-spacing:1px;text-align:center;
+}
+.demo-hint{font-size:9px;color:rgba(245,238,216,0.4);text-align:center;margin-top:4px;}
+.demo-panel{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,rgba(10,5,2,0.98),transparent);
+  padding:16px;border-radius:0 0 24px 24px;
+}
+.demo-panel-title{font-size:14px;font-weight:500;color:var(--gold-light);margin-bottom:2px;}
+.demo-panel-sub{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,238,216,0.4);margin-bottom:8px;}
+.demo-panel-desc{font-size:10px;color:rgba(245,238,216,0.7);line-height:1.5;margin-bottom:10px;}
+.demo-panel-btn{
+  background:rgba(200,149,26,0.2);border:1px solid rgba(200,149,26,0.4);
+  color:var(--gold-light);font-size:10px;padding:6px 12px;border-radius:12px;
+  display:inline-flex;align-items:center;gap:4px;
+}
+
+.demo-steps{display:flex;flex-direction:column;gap:24px;}
+.demo-step{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:20px;border-radius:8px;
+  border:1px solid rgba(200,149,26,0.15);
+  background:rgba(200,149,26,0.03);
+  transition:border-color 0.2s;
+}
+.demo-step:hover{border-color:rgba(200,149,26,0.35);}
+.demo-step-num{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--gold);color:var(--stone);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:500;flex-shrink:0;
+}
+.demo-step-title{font-size:15px;font-weight:500;color:var(--cream);margin-bottom:4px;}
+.demo-step-desc{font-size:13px;font-weight:300;color:rgba(245,238,216,0.6);line-height:1.6;}
+
+/* ── FEATURES ── */
+.features-section{background:#0D0804;}
+.features-inner{max-width:1100px;margin:0 auto;}
+.features-header{display:flex;gap:80px;align-items:flex-start;margin-bottom:64px;}
+.features-header-right{max-width:360px;}
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:rgba(200,149,26,0.15);
+  border:1px solid rgba(200,149,26,0.15);
+  border-radius:12px;overflow:hidden;
+}
+.feature-card{
+  padding:32px 28px;
+  background:#0D0804;
+  transition:background 0.2s;
+}
+.feature-card:hover{background:rgba(139,58,26,0.12);}
+.feature-icon{
+  width:40px;height:40px;
+  border:1px solid rgba(200,149,26,0.4);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:16px;
+  color:var(--gold);
+}
+.feature-title{font-size:16px;font-weight:500;color:var(--cream);margin-bottom:8px;}
+.feature-desc{font-size:13px;font-weight:300;color:rgba(245,238,216,0.6);line-height:1.7;}
+
+/* ── MARKET ── */
+.market-section{background:#0A0603;}
+.market-inner{max-width:1100px;margin:0 auto;}
+.market-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:center;margin-top:64px;
+}
+.market-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.market-stat{
+  padding:24px;border-radius:8px;
+  border:1px solid rgba(200,149,26,0.2);
+  background:rgba(200,149,26,0.04);
+}
+.market-stat-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:36px;font-weight:600;color:var(--gold-light);
+  display:block;line-height:1;margin-bottom:6px;
+}
+.market-stat-label{font-size:12px;color:rgba(245,238,216,0.55);font-weight:300;line-height:1.5;}
+.market-opportunities{display:flex;flex-direction:column;gap:16px;}
+.opportunity-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:16px;border-radius:6px;
+  border-left:2px solid var(--gold);
+  background:rgba(200,149,26,0.04);
+}
+.opportunity-title{font-size:14px;font-weight:500;color:var(--cream);margin-bottom:4px;}
+.opportunity-desc{font-size:12px;font-weight:300;color:rgba(245,238,216,0.6);line-height:1.6;}
+
+/* ── TEAM ── */
+.team-section{background:#110904;}
+.team-inner{max-width:1100px;margin:0 auto;}
+.team-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;margin-top:64px;
+}
+.team-card{
+  padding:28px;border-radius:10px;
+  border:1px solid rgba(200,149,26,0.2);
+  background:rgba(200,149,26,0.03);
+  text-align:center;
+}
+.team-avatar{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--brick),var(--brick-dark));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  color:var(--cream);margin:0 auto 16px;
+  border:2px solid rgba(200,149,26,0.3);
+}
+.team-name{font-size:15px;font-weight:500;color:var(--cream);margin-bottom:4px;}
+.team-role{font-size:12px;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;}
+.team-desc{font-size:12px;font-weight:300;color:rgba(245,238,216,0.55);line-height:1.6;}
+
+/* ── CTA ── */
+.cta-section{
+  background:#0D0804;
+  text-align:center;padding:120px 48px;
+  position:relative;overflow:hidden;
+}
+.cta-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(139,58,26,0.2) 0%,transparent 70%);
+}
+.cta-inner{position:relative;max-width:680px;margin:0 auto;}
+.cta-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(40px,6vw,72px);font-weight:300;
+  color:var(--cream);line-height:1.1;margin-bottom:20px;
+}
+.cta-title em{color:var(--gold-light);font-style:italic;}
+.cta-desc{font-size:16px;font-weight:300;color:rgba(245,238,216,0.65);line-height:1.8;margin-bottom:40px;}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.cta-url{
+  margin-top:32px;font-size:13px;color:rgba(245,238,216,0.4);
+  font-family:'Outfit',monospace;letter-spacing:1px;
+}
+.cta-url a{color:var(--gold);text-decoration:none;}
+
+/* ── FOOTER ── */
+footer{
+  background:#080402;padding:32px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(200,149,26,0.1);
+  flex-wrap:wrap;gap:16px;
+}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(245,238,216,0.4);}
+.footer-tagline{font-size:12px;color:rgba(245,238,216,0.25);font-style:italic;letter-spacing:0.5px;}
+.footer-badge{
+  font-size:11px;color:rgba(200,149,26,0.6);
+  border:1px solid rgba(200,149,26,0.2);
+  padding:4px 12px;border-radius:20px;letter-spacing:1px;
+}
+
+@media(max-width:768px){
+  nav{padding:16px 24px;}
+  .nav-links{display:none;}
+  section{padding:72px 24px;}
+  .demo-grid,.market-grid,.features-header{grid-template-columns:1fr;gap:48px;}
+  .features-grid{grid-template-columns:1fr;}
+  .team-grid{grid-template-columns:1fr 1fr;}
+  footer{flex-direction:column;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🏛️</div>
+    <span class="nav-logo-text">ChamScape</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#features">Tính năng</a></li>
+    <li><a href="#market">Thị trường</a></li>
+    <li><a href="#team">Đội ngũ</a></li>
+  </ul>
+  <button onclick="openAR()" class="nav-cta" style="border:none;cursor:pointer;">Trải nghiệm ngay</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-texture"></div>
+  <div class="hero-eyebrow">Cultural MarTech · Digital Heritage · IC Innovator 2026</div>
+  <h1 class="hero-title"><em>Cham</em>Scape</h1>
+  <p class="hero-subtitle">Scan the Past. Feel the Culture.</p>
+  <p class="hero-desc">
+    Nền tảng WebAR đầu tiên tái hiện tháp Chăm Pa thời hoàng kim ngay trên điện thoại — không cần tải app, không cần kính AR. Chỉ cần quét mã QR.
+  </p>
+  <div class="hero-actions">
+    <a href="#demo" class="btn-primary">Xem Demo →</a>
+    <a href="#features" class="btn-outline">Khám phá tính năng</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-num">450K+</span>
+      <span class="stat-label">Lượt khách Mỹ Sơn / năm</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">88%</span>
+      <span class="stat-label">Khách quốc tế</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">21.1M</span>
+      <span class="stat-label">Khách quốc tế VN 2025</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">1999</span>
+      <span class="stat-label">UNESCO World Heritage</span>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="demo-section" id="demo">
+  <div class="demo-inner">
+    <div class="section-eyebrow">Trải nghiệm · Experience</div>
+    <h2 class="section-title">Tháp Chăm <em>sống lại</em><br/>trong tầm tay bạn</h2>
+    <div class="demo-grid">
+      <div class="demo-phone-wrap">
+        <div class="demo-phone">
+          <div class="demo-phone-notch"></div>
+          <div class="demo-screen">
+            <div class="demo-screen-top">
+              <div class="demo-logo-mini">
+                <div class="demo-logo-dot">🏛</div>
+                <span class="demo-logo-name">ChamScape</span>
+              </div>
+              <span class="demo-lang">VI / EN</span>
+            </div>
+            <div class="demo-tower">
+              <div class="tower-tip"></div>
+              <div class="tower-top"></div>
+              <div class="tower-t1"></div>
+              <div class="tower-t2"></div>
+              <div class="tower-body"><div class="tower-door"></div></div>
+              <div class="tower-base"></div>
+              <div class="tower-platform"></div>
+              <div class="demo-ring ring1"></div>
+              <div class="demo-ring ring2"></div>
+            </div>
+            <div class="demo-gold-text">MY SON SANCTUARY</div>
+            <div class="demo-hint">4th – 14th Century CE · UNESCO</div>
+            <div class="demo-panel">
+              <div class="demo-panel-title">Thánh địa Mỹ Sơn</div>
+              <div class="demo-panel-sub">UNESCO · Quảng Nam, Việt Nam</div>
+              <div class="demo-panel-desc">Quần thể tháp Chăm xây dựng từ thế kỷ 4–14. Trung tâm tôn giáo của vương quốc Chăm Pa.</div>
+              <div class="demo-panel-btn">▶ Nghe thuyết minh</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-steps">
+        <div class="demo-step">
+          <div class="demo-step-num">1</div>
+          <div>
+            <div class="demo-step-title">Quét mã QR tại cổng vé</div>
+            <div class="demo-step-desc">Khách mua vé tại cổng, tích hợp lựa chọn "Thêm ChamScape AR: 50.000 VNĐ". Không cần tải app, mở trình duyệt là xong.</div>
+          </div>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num">2</div>
+          <div>
+            <div class="demo-step-title">Hướng camera vào tháp</div>
+            <div class="demo-step-desc">WebAR nhận diện ảnh tháp Chăm Pa thật → tháp 3D phục dựng thời hoàng kim hiện ra chồng lên thực tế.</div>
+          </div>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num">3</div>
+          <div>
+            <div class="demo-step-title">Nghe thuyết minh đa ngôn ngữ</div>
+            <div class="demo-step-desc">Audio guide tự động bằng tiếng Việt, Anh, Hàn, Trung, Nhật. Kịch bản do chuyên gia lịch sử Chăm Pa tư vấn.</div>
+          </div>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num">4</div>
+          <div>
+            <div class="demo-step-title">Chụp AR Selfie & Chia sẻ</div>
+            <div class="demo-step-desc">Chụp ảnh với tháp Chăm phục dựng → chia sẻ Instagram/TikTok → hashtag #ChamScape tạo hiệu ứng viral organic.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="features-inner">
+    <div class="features-header">
+      <div>
+        <div class="section-eyebrow">Tính năng · Features</div>
+        <h2 class="section-title">Công nghệ <em>WebAR</em><br/>không cần app</h2>
+      </div>
+      <div class="features-header-right">
+        <p class="section-desc">ChamScape chạy hoàn toàn trên trình duyệt — không cần cài đặt, không cần kính AR đắt tiền. Quét QR là trải nghiệm ngay lập tức.</p>
+      </div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🏛️</div>
+        <div class="feature-title">Tái hiện 3D tháp Chăm</div>
+        <div class="feature-desc">Mô hình 3D phục dựng kiến trúc Chăm Pa thế kỷ 4–14 chồng lên thực tế. Xoay, zoom, tương tác trực tiếp qua màn hình.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎙️</div>
+        <div class="feature-title">Audio đa ngôn ngữ</div>
+        <div class="feature-desc">Thuyết minh tự động VI, EN, KO, ZH, JA. Kịch bản do chuyên gia lịch sử Chăm Pa tư vấn — đảm bảo độ chính xác.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📸</div>
+        <div class="feature-title">AR Selfie & Social Sharing</div>
+        <div class="feature-desc">Chụp ảnh với tháp Chăm phục dựng → chia sẻ mạng xã hội → #ChamScape tạo cộng đồng và hiệu ứng viral.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <div class="feature-title">Bản đồ AR tương tác</div>
+        <div class="feature-desc">Chỉ dẫn tham quan thông minh, gợi ý lộ trình theo thời gian, điểm dừng tối ưu trong 2–3 giờ tham quan.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎓</div>
+        <div class="feature-title">Gói học liệu số</div>
+        <div class="feature-desc">Nội dung AR dùng offline tại lớp học. Tích hợp gamification học lịch sử — dành cho THCS, THPT, Đại học.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Analytics Dashboard</div>
+        <div class="feature-desc">Dữ liệu lượt quét, tỷ lệ chuyển đổi, hành vi khách hàng real-time — cung cấp cho Ban Quản lý Di sản Mỹ Sơn.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET -->
+<section class="market-section" id="market">
+  <div class="market-inner">
+    <div class="section-eyebrow">Thị trường · Market</div>
+    <div class="market-grid">
+      <div>
+        <h2 class="section-title">Cơ hội thị trường<br/><em>tỷ đô</em></h2>
+        <p class="section-desc">Di sản số toàn cầu tăng trưởng mạnh. Asia Pacific chiếm 42% thị phần. WebAR ước tính chiếm 80% trải nghiệm AR năm 2025.</p>
+        <div style="margin-top:32px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(245,238,216,0.6);">
+            <span style="color:var(--gold);font-size:16px;">✓</span>
+            Nghị quyết 80-NQ/TW: số hóa di sản là ưu tiên quốc gia
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(245,238,216,0.6);">
+            <span style="color:var(--gold);font-size:16px;">✓</span>
+            Chiến lược Công nghiệp Văn hóa đến 2030, tầm nhìn 2045
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(245,238,216,0.6);">
+            <span style="color:var(--gold);font-size:16px;">✓</span>
+            Mỹ Sơn gần Đà Nẵng & Hội An — hệ sinh thái du lịch mạnh
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(245,238,216,0.6);">
+            <span style="color:var(--gold);font-size:16px;">✓</span>
+            5G phủ sóng ngày càng rộng — xóa rào cản hạ tầng
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="market-stats-grid">
+          <div class="market-stat">
+            <span class="market-stat-num">850M+</span>
+            <span class="market-stat-label">Doanh thu mục tiêu năm 1 (VNĐ)</span>
+          </div>
+          <div class="market-stat">
+            <span class="market-stat-num">Q3</span>
+            <span class="market-stat-label">Breakeven dự kiến năm đầu</span>
+          </div>
+          <div class="market-stat">
+            <span class="market-stat-num">3 năm</span>
+            <span class="market-stat-label">Scale ra Đông Nam Á</span>
+          </div>
+          <div class="market-stat">
+            <span class="market-stat-num">$2–5</span>
+            <span class="market-stat-label">Willingness to pay / khách quốc tế</span>
+          </div>
+        </div>
+        <div class="market-opportunities" style="margin-top:24px;">
+          <div class="opportunity-item">
+            <div>
+              <div class="opportunity-title">Segment 1: Khách du lịch quốc tế</div>
+              <div class="opportunity-desc">Pay-per-use: 50.000–100.000 VNĐ/lượt · 450K khách/năm · 88% quốc tế</div>
+            </div>
+          </div>
+          <div class="opportunity-item">
+            <div>
+              <div class="opportunity-title">Segment 2: Học sinh, sinh viên VN</div>
+              <div class="opportunity-desc">Subscription: 5–10 triệu VNĐ/trường/năm · B2B qua Sở GD&ĐT</div>
+            </div>
+          </div>
+          <div class="opportunity-item">
+            <div>
+              <div class="opportunity-title">Segment 3: Tài trợ & Licensing</div>
+              <div class="opportunity-desc">Brand sponsorship + nhượng quyền mô hình cho OTA, lữ hành</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="cta-bg"></div>
+  <div class="cta-inner">
+    <h2 class="cta-title">Văn hóa Chăm Pa<br/>đã <em>im lặng</em> hàng thế kỷ</h2>
+    <p class="cta-desc">Hãy để ChamScape giúp điệu múa Chăm lên tiếng — bằng ngôn ngữ của thời đại.</p>
+    <div class="cta-actions">
+      <button onclick="openAR()" class="btn-primary">Trải nghiệm WebAR →</button>
+      <a href="#demo" class="btn-outline">Xem Demo</a>
+    </div>
+    <div class="cta-url">
+      WebAR Demo: <a href="https://khanhphuongngogia-source.github.io/chamscape-webar" target="_blank">khanhphuongngogia-source.github.io/chamscape-webar</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">ChamScape · IC Innovator 2026</div>
+  <div class="footer-tagline">Scan the Past. Feel the Culture.</div>
+  <div class="footer-badge">Cultural MarTech · Digital Heritage</div>
+</footer>
+
+</body>
+</html>
+
+<!-- AR MODAL -->
+<div id="ar-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);align-items:center;justify-content:center;">
+  <div style="position:relative;width:100%;max-width:420px;height:90vh;background:#0D0804;border-radius:24px;overflow:hidden;border:1px solid rgba(200,149,26,0.3);">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:linear-gradient(to bottom,rgba(13,8,4,0.95),transparent);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:28px;height:28px;background:#C8951A;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;">🏛️</div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:#F5EED8;">ChamScape</div>
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(245,238,216,0.5);">Digital Heritage · My Son</div>
+        </div>
+      </div>
+      <button onclick="closeAR()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;">✕</button>
+    </div>
+    <iframe id="ar-iframe" src="" style="width:100%;height:100%;border:none;" allow="camera;microphone;accelerometer;gyroscope;xr-spatial-tracking" allowfullscreen></iframe>
+    <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);border:1px solid rgba(200,149,26,0.5);border-radius:20px;padding:9px 18px;font-size:12px;color:#fff;white-space:nowrap;">
+      Hướng camera vào <span style="color:#F5C842;font-weight:600;">ảnh tháp Mỹ Sơn</span> để xem 3D
+    </div>
+  </div>
+</div>
+
+<script>
+function openAR(){
+  var m=document.getElementById('ar-modal');
+  document.getElementById('ar-iframe').src='https://khanhphuongngogia-source.github.io/chamscape-webar';
+  m.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeAR(){
+  document.getElementById('ar-iframe').src='';
+  document.getElementById('ar-modal').style.display='none';
+  document.body.style.overflow='';
+}
+document.getElementById('ar-modal').addEventListener('click',function(e){if(e.target===this)closeAR();});
+</script>
